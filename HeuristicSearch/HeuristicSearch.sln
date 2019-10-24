@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29418.71
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HeuristicSearch", "HeuristicSearch.fsproj", "{8CF96B36-387E-491F-A80C-0C5FBB880671}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HeuristicSearchTests", "..\HeuristicSearchTests\HeuristicSearchTests.fsproj", "{81D213C0-186E-4861-86BA-875AD6299F1F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CF96B36-387E-491F-A80C-0C5FBB880671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CF96B36-387E-491F-A80C-0C5FBB880671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CF96B36-387E-491F-A80C-0C5FBB880671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CF96B36-387E-491F-A80C-0C5FBB880671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81D213C0-186E-4861-86BA-875AD6299F1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81D213C0-186E-4861-86BA-875AD6299F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81D213C0-186E-4861-86BA-875AD6299F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81D213C0-186E-4861-86BA-875AD6299F1F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {579F7617-F34B-43CC-A80B-8B65726014D9}
+	EndGlobalSection
+EndGlobal
