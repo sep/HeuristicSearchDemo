@@ -12,6 +12,11 @@ type Position = {
     y: int
 }
 
+type State = {
+    position : Position;
+    generated_by : Action;
+}
+
 type Board = bool [,]
 
 type Problem = {
@@ -106,6 +111,8 @@ let key (position : Position) =
     position.x, position.y
 
 //(initial_state : 'state)
-let make_initial_state (problem : Problem) =
-    problem.start
+let make_initial_state (problem : Problem) = { 
+    position = problem.start; 
+    generated_by = Noop 
+}
 
