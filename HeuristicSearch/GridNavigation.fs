@@ -7,15 +7,38 @@ type Action =
 | West
 | Noop
 
+let string_of_action = function
+| North -> "North"
+| South -> "South"
+| East -> "East"
+| West -> "West"
+| Noop -> ""
+
 type Position = {
     x : int
     y: int
 }
 
+let string_of_position (position : Position) =
+    Printf.sprintf "(%i, %i)" position.x position.y
+
 type State = {
     position : Position;
     generated_by : Action;
 }
+
+let string_of_state (state : State) =
+    match state.generated_by with
+    | Noop -> Printf.sprintf "Start in %s" (string_of_position state.position)
+    | action -> Printf.sprintf "%s by way of %s" (string_of_position state.position) (string_of_action action)
+
+type Solution = State list
+
+let string_of_solution (solution : Solution) =
+    let rec walk accum = function
+    | ([] : Solution) -> accum
+    | hd :: tl -> walk (Printf.sprintf "%s\n%s" accum (string_of_state hd)) tl in
+    walk "" solution
 
 type Board = bool [,]
 
@@ -61,6 +84,15 @@ let char_of_cell = function
 | Free -> ' '
 | Blocked -> '#'
 
+let cell_of_char = function
+| 'S'
+| 's' -> InitialState
+| 'G'
+| 'g' -> GoalState
+| ' ' -> Free
+| '#' -> Blocked
+| c -> failwith (Printf.sprintf "Saw unexpected character %c while interpreting board from string" c)
+
 let problem_to_string (problem : Problem) =
     let spf = Printf.sprintf
     let height = problem.board.GetLength 0
@@ -77,25 +109,18 @@ let problem_to_string (problem : Problem) =
         done;
         !board_string
 
-let cell_of_char = function
-| 'S'
-| 's' -> InitialState
-| 'G'
-| 'g' -> GoalState
-| ' ' -> Free
-| '#' -> Blocked
-| c -> failwith (Printf.sprintf "Saw unexpected character %c while interpreting board from string" c)
-
 let goal_test (problem : Problem) (position : Position) =
     problem.finish = position
 
 let move (position : Position) = function
-| North -> { x = position.x; y = position.y - 1 }
-| South -> { x = position.x; y = position.y + 1 }
-| East -> { x = position.x + 1; y = position.y }
-| West -> { x = position.x - 1; y = position.y }
+| North -> { position with y = position.y - 1 }
+| South -> { position with y = position.y + 1 }
+| East ->  { position with x = position.x + 1 }
+| West ->  { position with x = position.x - 1 }
 | Noop -> position
 
+let move_state (state : State) action =
+    { position = move state.position action; generated_by = action }
 
 let make_problem (board : Board) (initial : Position) (goal : Position) =
     if legal_position board initial |> not then 
@@ -109,20 +134,27 @@ let expand (board : Board) (state : State) =
     let validate_position = legal_position board
     let consider_action (accum : (State * float) list) (action : Action) = 
         if are_opposite action state.generated_by then accum else
-        let state' = { position = move state.position action; generated_by = action }
+        let state' = move_state state action
         if validate_position state'.position then
                 (state', 1.) :: accum
             else
                 accum
     List.fold consider_action [] possible_actions
 
-// todo: perfect hash by linearizing based on board size
-let key (position : Position) =
-    position.x, position.y
+let key (board : Board) (position : Position) =
+    let width = board.GetLength 1
+    position.x + position.y * width 
 
-//(initial_state : 'state)
 let make_initial_state (problem : Problem) = { 
     position = problem.start; 
     generated_by = Noop 
 }
 
+let validate_solution (problem : Problem) (solution : Solution) =
+    let rec walk_solution (current_state : State) = function
+        | ([] : Solution) -> problem.finish = current_state.position
+        | hd::tl -> 
+            if current_state <> hd then false else
+            walk_solution (move_state current_state hd.generated_by) tl
+        in
+    walk_solution (make_initial_state problem) solution
