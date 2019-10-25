@@ -52,5 +52,6 @@ let key (position : Position) =
     position.x, position.y
 
 //(initial_state : 'state)
-
+let make_initial_state (problem : Problem) =
+    problem.start
 
