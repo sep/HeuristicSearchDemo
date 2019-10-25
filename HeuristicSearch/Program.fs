@@ -40,9 +40,12 @@ let make_root initial_state =
 
 let generate_solution (goal_node : 'a SearchNode) =
     let rec walk node =
-        if node = node.parent then [node.state] else
+        if node = node.parent then [ node.state ] else
             node.state :: walk node.parent in
         walk goal_node |> List.rev
+
+let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
+    generate_solution sol_node.solution
 
 let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 'state -> bool) (key : 'state -> 'hash_value) (initial_state : 'state) =
     let openlist = ref []
@@ -92,4 +95,12 @@ let main argv =
     let (finish : GridNavigation.Position) = { x = 2; y = 2 }
     let (problem : GridNavigation.Problem) = { start = start; finish = finish; board = board }
     let (root : GridNavigation.State) = GridNavigation.make_initial_state problem
-    0
+    let expand = GridNavigation.expand problem.board
+    let key = GridNavigation.key problem.board
+    let goal = GridNavigation.goal_test problem in
+    let metrics = uniform_cost_search expand goal key root in
+    let generate_solution (node : (GridNavigation.State SearchNode) SolutionNode) = generate_solution_of_sol_node node
+    let print_sol_node (node : (GridNavigation.State SearchNode) SolutionNode) = generate_solution node |> GridNavigation.print_solution in
+        GridNavigation.problem_to_string problem |> printf "%s\n";
+        List.iter print_sol_node metrics.solution_nodes;
+        0
