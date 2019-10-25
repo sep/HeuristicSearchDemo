@@ -38,6 +38,16 @@ let legal_position (board : Board) (position : Position) =
     position.y < (board.GetLength 1) &&
     board.[position.y, position.x]
 
+let opposite_action = function
+| North -> South
+| South -> North
+| East -> West
+| West -> East
+| Noop -> Noop
+
+let are_opposite (act1 : Action) (act2 : Action) =
+    act1 = opposite_action act2
+
 let cell_type (problem : Problem) (position : Position) =
     assert legal_position problem.board position
     if problem.start = position then InitialState
@@ -94,16 +104,16 @@ let make_problem (board : Board) (initial : Position) (goal : Position) =
         failwith "Goal state not a legal board position"
     { start = initial; finish = goal; board = board }
   
-let expand (board : Board) (position : Position) = 
+let expand (board : Board) (state : State) = 
     let possible_actions = [North; South; East; West]
     let validate_position = legal_position board
-    let consider_action (accum : (Position * float) list) (action : Action) = 
-        let position' = move position action
-        if validate_position position' then
-                (position', 1.) :: accum
+    let consider_action (accum : (State * float) list) (action : Action) = 
+        if are_opposite action state.generated_by then accum else
+        let state' = { position = move state.position action; generated_by = action }
+        if validate_position state'.position then
+                (state', 1.) :: accum
             else
                 accum
-
     List.fold consider_action [] possible_actions
 
 // todo: perfect hash by linearizing based on board size
