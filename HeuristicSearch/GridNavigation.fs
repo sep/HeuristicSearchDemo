@@ -40,6 +40,8 @@ let string_of_solution (solution : Solution) =
     | hd :: tl -> walk (Printf.sprintf "%s\n%s" accum (string_of_state hd)) tl in
     walk "" solution
 
+let print_solution (solution : Solution) = string_of_solution solution |> printf "%s"
+
 type Board = bool [,]
 
 type Problem = {
@@ -55,10 +57,10 @@ type CellType =
     | Blocked
 
 let legal_position (board : Board) (position : Position) =
-    position.x > 0 && 
-    position.y > 0 && 
-    position.x < (board.GetLength 0) && 
-    position.y < (board.GetLength 1) &&
+    position.x >= 0 && 
+    position.y >= 0 && 
+    position.y < (board.GetLength 0) && 
+    position.x < (board.GetLength 1) &&
     board.[position.y, position.x]
 
 let opposite_action = function
@@ -72,7 +74,9 @@ let are_opposite (act1 : Action) (act2 : Action) =
     act1 = opposite_action act2
 
 let cell_type (problem : Problem) (position : Position) =
-    assert legal_position problem.board position
+    if not (legal_position problem.board position) then begin
+        (string_of_position position |> Printf.sprintf "Illegal position %s\n") |> failwith 
+    end else
     if problem.start = position then InitialState
     else if problem.finish = position then GoalState
     else if problem.board.[position.y, position.x] then Free
@@ -109,8 +113,8 @@ let problem_to_string (problem : Problem) =
         done;
         !board_string
 
-let goal_test (problem : Problem) (position : Position) =
-    problem.finish = position
+let goal_test (problem : Problem) (state : State) =
+    problem.finish = state.position
 
 let move (position : Position) = function
 | North -> { position with y = position.y - 1 }
@@ -141,9 +145,9 @@ let expand (board : Board) (state : State) =
                 accum
     List.fold consider_action [] possible_actions
 
-let key (board : Board) (position : Position) =
+let key (board : Board) (state : State) =
     let width = board.GetLength 1
-    position.x + position.y * width 
+    state.position.x + state.position.y * width 
 
 let make_initial_state (problem : Problem) = { 
     position = problem.start; 
