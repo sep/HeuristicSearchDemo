@@ -1,6 +1,9 @@
 module HeuristicSearchTests
 
 open NUnit.Framework
+open Microsoft.FSharp.Reflection
+module GN = GridNavigation
+module UCS = UniformCostSearch
 
 [<SetUp>]
 let Setup () =
@@ -8,41 +11,118 @@ let Setup () =
 
 [<Test>]
 let MakeProblem_fails_on_blocked_start () =
-    let (board : GridNavigation.Board) = Array2D.create 3 3 true
-    let (start : GridNavigation.Position) = { x = 1; y = 1 }
-    let (goal : GridNavigation.Position) = { x = 0; y = 0 }
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 1; y = 1 }
+    let (goal : GN.Position) = { x = 0; y = 0 }
     board.[1,1] <- false
     try
-        ignore(GridNavigation.make_problem board start goal)
+        ignore(GN.make_problem board start goal)
         Assert.Fail ()
     with
     | _ -> ()
 
 [<Test>]
 let MakeProblem_fails_on_blocked_goal () =
-    let (board : GridNavigation.Board) = Array2D.create 3 3 true
-    let (goal : GridNavigation.Position) = { x = 1; y = 1 }
-    let (start : GridNavigation.Position) = { x = 0; y = 0 }
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (goal : GN.Position) = { x = 1; y = 1 }
+    let (start : GN.Position) = { x = 0; y = 0 }
     board.[1,1] <- false
     try
-        ignore(GridNavigation.make_problem board start goal)
+        ignore(GN.make_problem board start goal)
         Assert.Fail ()
     with
     | _ -> ()
 
 [<Test>]
+let Opposites_are_opposite () =
+    let test_element (one : GN.Action) =
+        Assert.True (GN.are_opposite one (GN.opposite_action one))
+    let cases = [ for c in (FSharpType.GetUnionCases (typeof<GN.Action>)) do
+                    let case = FSharpValue.MakeUnion (c, [||]) :?> GN.Action in
+                    yield case ]
+    List.iter test_element cases
+
+[<Test>]
+let empty_solution_valid_for_solved_problem () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 0; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let solution = [ { GN.position = start; GN.generated_by = GN.Noop}]
+    Assert.True (GN.validate_solution problem solution)
+
+[<Test>]
+let empty_solution_invalid_for_unsolved_problem () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let solution = [ { GN.position = start; GN.generated_by = GN.Noop}]
+    Assert.False (GN.validate_solution problem solution)
+
+[<Test>]
+let ValidSolutionIsValid () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let solution = [ 
+        { GN.position = start; GN.generated_by = GN.Noop };
+        { GN.position = { x = 1; y = 0 }; GN.generated_by = GN.East };
+        { GN.position = { x = 2; y = 0 }; GN.generated_by = GN.East };
+    ]
+    Assert.True (GN.validate_solution problem solution)
+
+[<Test>]
+let EmptySolutionFails () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    try
+        ignore(GN.validate_solution problem []);
+        Assert.Fail()
+    with msg ->
+        Assert.True ("Empty Solution is not valid" = msg.Message)
+
+[<Test>]
+let PartialSolutionFalse () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let solution = [ 
+        { GN.position = start; GN.generated_by = GN.Noop };
+        { GN.position = { x = 1; y = 0 }; GN.generated_by = GN.East };
+    ]
+    Assert.False (GN.validate_solution problem solution)
+
+[<Test>]
+let InvalidSolutionFalse () =
+    let (board : GN.Board) = Array2D.create 3 3 true
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 0 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let solution = [ 
+        { GN.position = start; GN.generated_by = GN.Noop };
+        { GN.position = { x = 2; y = 0 }; GN.generated_by = GN.West };
+    ]
+    Assert.False (GN.validate_solution problem solution)
+
+[<Test>]
 let EndToEnd () =
-    let (board : GridNavigation.Board) = Array2D.create 3 3 true
+    let (board : GN.Board) = Array2D.create 3 3 true
     board.[1,1] <- false
-    let (start : GridNavigation.Position) = { x = 0; y = 0 }
-    let (finish : GridNavigation.Position) = { x = 2; y = 2 }
-    let (problem : GridNavigation.Problem) = { start = start; finish = finish; board = board }
-    let (root : GridNavigation.State) = GridNavigation.make_initial_state problem
-    let expand = GridNavigation.expand problem.board
-    let key = GridNavigation.key problem.board
-    let goal = GridNavigation.goal_test problem in
-    let metrics = UniformCostSearch.uniform_cost_search expand goal key root in
-    let generate_solution (node : (GridNavigation.State UniformCostSearch.SearchNode) UniformCostSearch.SolutionNode) = UniformCostSearch.generate_solution_of_sol_node node
-    let print_sol_node (node : (GridNavigation.State UniformCostSearch.SearchNode) UniformCostSearch.SolutionNode) = generate_solution node |> GridNavigation.print_solution in
-        GridNavigation.problem_to_string problem |> printf "%s\n";
-        List.iter print_sol_node metrics.solution_nodes
+    let (start : GN.Position) = { x = 0; y = 0 }
+    let (finish : GN.Position) = { x = 2; y = 2 }
+    let (problem : GN.Problem) = { start = start; finish = finish; board = board }
+    let (root : GN.State) = GN.make_initial_state problem
+    let expand = GN.expand problem.board
+    let key = GN.key problem.board
+    let goal = GN.goal_test problem in
+    let metrics = UCS.uniform_cost_search expand goal key root in
+    let generate_solution (node : (GN.State UCS.SearchNode) UCS.SolutionNode) = UCS.generate_solution_of_sol_node node
+    let validate_sol_node (node : (GN.State UCS.SearchNode) UCS.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
+        GN.problem_to_string problem |> printf "%s\n";
+        Assert.AreEqual(2, metrics.solution_nodes.Length);
+        List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True
