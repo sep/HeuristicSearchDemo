@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29418.71
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HeuristicSearch", "HeuristicSearch.fsproj", "{8CF96B36-387E-491F-A80C-0C5FBB880671}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "HeuristicSearch", "HeuristicSearch.fsproj", "{8CF96B36-387E-491F-A80C-0C5FBB880671}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HeuristicSearchTests", "..\HeuristicSearchTests\HeuristicSearchTests.fsproj", "{81D213C0-186E-4861-86BA-875AD6299F1F}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "HeuristicSearchTests", "..\HeuristicSearchTests\HeuristicSearchTests.fsproj", "{81D213C0-186E-4861-86BA-875AD6299F1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
