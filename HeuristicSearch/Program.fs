@@ -15,7 +15,7 @@ type 'a SearchMetrics = {
 }
 
 type 'a SearchNode = {
-    parent : 'a SearchNode
+    parent : 'a SearchNode Option
     state : 'a
     cost : float
 }
@@ -31,17 +31,20 @@ let initial_metrics () = {
 }
 
 let make_root initial_state =
-    let rec root = {
-        parent = root;
-        state = initial_state;
+    let root = {
+        parent = None
+        state = initial_state
         cost = 0.
     }
     root
 
 let generate_solution (goal_node : 'a SearchNode) =
     let rec walk node =
-        if node = node.parent then [ node.state ] else
-            node.state :: walk node.parent in
+        node.state :: begin
+            match node.parent with
+            | None -> []
+            | Some parent -> walk parent
+            end in
         walk goal_node |> List.rev
 
 let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
@@ -57,7 +60,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
     let node_goal_test = wrap_state_fn goal_test
     let enqueue (node : 'state SearchNode) = openlist := node :: !openlist
     let consider_child current_node (state, step_cost) = 
-        let child_node = { parent = current_node; state = state; cost = current_node.cost + step_cost }
+        let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost }
         enqueue child_node
     let pop () =
         match !openlist with
@@ -67,9 +70,12 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                 openlist := tl;
                 Some hd
             end
-    let rec search = function
-        | None -> ()
-        | Some current_node ->
+    enqueue root
+    let finished = ref false
+    while not !finished do
+        match pop() with
+        | None -> finished := true
+        | Some current_node -> 
             if node_goal_test current_node then
                 metrics.solution_nodes <- { solution = current_node; found_at_time = DateTime.Now } :: metrics.solution_nodes else
                 begin
@@ -82,15 +88,13 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                         List.iter (consider_child current_node) child_tuples
                     end
                 end
-            search (pop())
-    enqueue root
-    search (pop())
     metrics
         
 
 [<EntryPoint>]
 let main argv =
     let (board : GridNavigation.Board) = Array2D.create 3 3 true
+    board.[1,1] <- false
     let (start : GridNavigation.Position) = { x = 0; y = 0 }
     let (finish : GridNavigation.Position) = { x = 2; y = 2 }
     let (problem : GridNavigation.Problem) = { start = start; finish = finish; board = board }
