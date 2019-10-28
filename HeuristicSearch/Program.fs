@@ -81,8 +81,9 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
         match pop() with
         | None -> finished := true
         | Some current_node -> 
-            if node_goal_test current_node then
-                metrics.solution_nodes <- { solution = current_node; found_at_time = DateTime.Now } :: metrics.solution_nodes else
+            if node_goal_test current_node then begin
+                metrics.solution_nodes <- { solution = current_node; found_at_time = DateTime.Now } :: metrics.solution_nodes;
+                finished := true end else
                 begin
                     let key_val = node_key current_node
                     if Map.containsKey key_val !closedlist then
