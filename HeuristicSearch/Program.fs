@@ -20,6 +20,9 @@ type 'a SearchNode = {
     cost : float
 }
 
+let better node1 node2 =
+    node1.cost < node2.cost
+
 let wrap_state_fn fn node =
     fn node.state
 
@@ -61,7 +64,9 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
     let enqueue (node : 'state SearchNode) = openlist := node :: !openlist
     let consider_child current_node (state, step_cost) = 
         let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost }
-        enqueue child_node
+        match metrics.solution_nodes with
+            | [] -> enqueue child_node
+            | hd::_ -> if better child_node hd.solution then enqueue child_node
     let pop () =
         match !openlist with
         | [] -> None
