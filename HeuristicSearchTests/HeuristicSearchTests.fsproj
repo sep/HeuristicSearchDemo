@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="UnitTest1.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="GridNavigationTests.fs" />
+    <Compile Include="UniformCostSearchTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
