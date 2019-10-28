@@ -126,7 +126,6 @@ let RandomRespectsSeed() =
     let test seed =
         let rand = System.Random seed
         GN.random_problem (Some rand) 1000 1000 0.25
-    let seed_gen = System.Random()
     for i in 0..10 do
         let seed = seed_rand.Next()
         let p1 = test seed
