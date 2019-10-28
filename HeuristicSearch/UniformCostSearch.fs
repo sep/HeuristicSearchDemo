@@ -67,7 +67,7 @@ let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
 
 let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 'state -> bool) (key : 'state -> 'hash_value) (initial_state : 'state) =
     let mutable openlist : FSharpx.Collections.IPriorityQueue<'state SearchNode> = FSharpx.Collections.PriorityQueue.empty false
-    let mutable closedlist = Map.empty
+    let mutable closedlist : FSharpx.Collections.PersistentHashMap<'hash_value, 'state SearchNode> = FSharpx.Collections.PersistentHashMap.empty
     let root = make_root initial_state
     let metrics = initial_metrics ()
     let node_key = wrap_state_fn key
@@ -94,10 +94,10 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                 finished <- true end else
                 begin
                     let key_val = node_key current_node
-                    if Map.containsKey key_val closedlist then
+                    if closedlist.ContainsKey key_val then
                         metrics.duplicates <- metrics.duplicates + 1
                     else begin
-                        closedlist <- Map.add key_val current_node.cost closedlist
+                        closedlist <- closedlist.Add(key_val, current_node)
                         let child_tuples = node_expand current_node
                         List.iter (consider_child current_node) child_tuples
                     end
