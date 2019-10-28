@@ -66,28 +66,23 @@ let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
     generate_solution sol_node.solution
 
 let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 'state -> bool) (key : 'state -> 'hash_value) (initial_state : 'state) =
-    let openlist = ref []
+    let (openlist : Ref<FSharpx.Collections.IPriorityQueue<'state SearchNode>>) = ref (FSharpx.Collections.PriorityQueue.empty false)
     let closedlist = ref Map.empty
     let root = make_root initial_state
     let metrics = initial_metrics ()
     let node_key = wrap_state_fn key
     let node_expand = wrap_state_fn expand
     let node_goal_test = wrap_state_fn goal_test
-    // Note, this only works on unit costs domains.  Needs a priority queue to be general
-    let enqueue (node : 'state SearchNode) = openlist := node :: !openlist
+    let enqueue (node : 'state SearchNode) = openlist := FSharpx.Collections.PriorityQueue.insert node !openlist
     let consider_child current_node (state, step_cost) = 
         let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost }
         match metrics.solution_nodes with
             | [] -> enqueue child_node
             | hd::_ -> if better child_node hd.solution then enqueue child_node
     let pop () =
-        match !openlist with
-        | [] -> None
-        | hd::tl -> 
-            begin
-                openlist := tl;
-                Some hd
-            end
+        match FSharpx.Collections.PriorityQueue.tryPop !openlist with
+        | Some (ret, openlist') -> openlist := openlist'; Some ret
+        | _ -> None
     enqueue root
     let finished = ref false
     while not !finished do
