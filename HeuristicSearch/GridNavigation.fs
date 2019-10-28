@@ -186,3 +186,6 @@ let validate_solution (problem : Problem) (solution : Solution) =
             walk_solution (move_state current_state next.generated_by) (next::tl)
         in
     walk_solution (make_initial_state problem) solution
+
+let manhattan_distance (problem : Problem) (state : State) =
+    abs(problem.finish.x - state.position.x) + abs(problem.finish.y - state.position.y)
