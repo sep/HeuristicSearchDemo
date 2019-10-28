@@ -126,3 +126,26 @@ let EndToEnd () =
         GN.problem_to_string problem |> printf "%s\n";
         Assert.AreEqual(2, metrics.solution_nodes.Length);
         List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True
+
+[<Test>]
+let RandomProblemsAreValid() =
+    let test_one() =
+        let problem = GN.random_problem None 1000 1000 0.25
+        GN.legal_position problem.board problem.start |> Assert.True
+        GN.legal_position problem.board problem.finish |> Assert.True
+    for i in 0..10 do
+        test_one()
+    done
+
+[<Test>]
+let RandomRespectsSeed() =
+    let seed_rand = System.Random()
+    let test seed =
+        let rand = System.Random seed
+        GN.random_problem (Some rand) 1000 1000 0.25
+    let seed_gen = System.Random()
+    for i in 0..10 do
+        let seed = seed_rand.Next()
+        let p1 = test seed
+        let p2 = test seed
+        Assert.AreEqual(p1,p2)

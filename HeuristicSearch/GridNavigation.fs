@@ -1,4 +1,5 @@
-﻿module GridNavigation
+﻿
+module GridNavigation
 
 type Action =
 | North
@@ -40,6 +41,34 @@ type State = {
 
 type Solution = State list
 
+let in_bounds (board : Board) (position : Position) =
+    position.x >= 0 && 
+    position.y >= 0 && 
+    position.y < (board.GetLength 0) && 
+    position.x < (board.GetLength 1)
+
+let legal_position (board : Board) (position : Position) =
+    in_bounds board position &&
+    board.[position.y, position.x]
+
+let random_board (src_rand : System.Random Option) (width : int) (height : int) (p_blocked : float) =
+    if p_blocked < 0. || p_blocked > 1. then failwith "p_blocked should be between 0 and 1";
+    let rand = match src_rand with | None -> System.Random () | Some src -> src
+    let block _ _ = (float (rand.Next())) > p_blocked
+    Array2D.init height width block
+
+let random_position (src_rand : System.Random Option) (width : int) (height : int) =
+    let rand = match src_rand with | None -> System.Random () | Some src -> src
+    { x = rand.Next() % width; y = rand.Next() % height }
+
+let random_problem (src_rand : System.Random Option) (width : int) (height : int) (p_blocked : float) =
+    let rand = match src_rand with | None -> System.Random () | Some src -> src
+    let board = random_board src_rand width height p_blocked
+    let rec find_legal_position () =
+        let position = random_position src_rand width height
+        if legal_position board position then position else find_legal_position() in
+    { board = board; start = find_legal_position(); finish = find_legal_position ()}
+
 let string_of_position (position : Position) =
     Printf.sprintf "(%i, %i)" position.x position.y
 
@@ -56,16 +85,6 @@ let string_of_solution (solution : Solution) =
     walk (List.length solution |> Printf.sprintf "Solution has %i steps") solution
 
 let print_solution (solution : Solution) = string_of_solution solution |> printf "%s"
-
-let in_bounds (board : Board) (position : Position) =
-    position.x >= 0 && 
-    position.y >= 0 && 
-    position.y < (board.GetLength 0) && 
-    position.x < (board.GetLength 1)
-
-let legal_position (board : Board) (position : Position) =
-    in_bounds board position &&
-    board.[position.y, position.x]
 
 let opposite_action = function
 | North -> South
