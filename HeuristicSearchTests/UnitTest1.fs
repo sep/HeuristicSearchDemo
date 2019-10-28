@@ -7,7 +7,31 @@ let Setup () =
     ()
 
 [<Test>]
-let Test_EndToEnd () =
+let MakeProblem_fails_on_blocked_start () =
+    let (board : GridNavigation.Board) = Array2D.create 3 3 true
+    let (start : GridNavigation.Position) = { x = 1; y = 1 }
+    let (goal : GridNavigation.Position) = { x = 0; y = 0 }
+    board.[1,1] <- false
+    try
+        ignore(GridNavigation.make_problem board start goal)
+        Assert.Fail ()
+    with
+    | _ -> ()
+
+[<Test>]
+let MakeProblem_fails_on_blocked_goal () =
+    let (board : GridNavigation.Board) = Array2D.create 3 3 true
+    let (goal : GridNavigation.Position) = { x = 1; y = 1 }
+    let (start : GridNavigation.Position) = { x = 0; y = 0 }
+    board.[1,1] <- false
+    try
+        ignore(GridNavigation.make_problem board start goal)
+        Assert.Fail ()
+    with
+    | _ -> ()
+
+[<Test>]
+let EndToEnd () =
     let (board : GridNavigation.Board) = Array2D.create 3 3 true
     board.[1,1] <- false
     let (start : GridNavigation.Position) = { x = 0; y = 0 }
