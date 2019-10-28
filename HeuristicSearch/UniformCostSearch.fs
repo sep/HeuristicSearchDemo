@@ -96,21 +96,3 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                 end
     metrics
         
-
-[<EntryPoint>]
-let main argv =
-    let (board : GridNavigation.Board) = Array2D.create 3 3 true
-    board.[1,1] <- false
-    let (start : GridNavigation.Position) = { x = 0; y = 0 }
-    let (finish : GridNavigation.Position) = { x = 2; y = 2 }
-    let (problem : GridNavigation.Problem) = { start = start; finish = finish; board = board }
-    let (root : GridNavigation.State) = GridNavigation.make_initial_state problem
-    let expand = GridNavigation.expand problem.board
-    let key = GridNavigation.key problem.board
-    let goal = GridNavigation.goal_test problem in
-    let metrics = uniform_cost_search expand goal key root in
-    let generate_solution (node : (GridNavigation.State SearchNode) SolutionNode) = generate_solution_of_sol_node node
-    let print_sol_node (node : (GridNavigation.State SearchNode) SolutionNode) = generate_solution node |> GridNavigation.print_solution in
-        GridNavigation.problem_to_string problem |> printf "%s\n";
-        List.iter print_sol_node metrics.solution_nodes;
-        0
