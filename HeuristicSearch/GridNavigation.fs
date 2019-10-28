@@ -54,7 +54,7 @@ let legal_position (board : Board) (position : Position) =
 let random_board (src_rand : System.Random Option) (width : int) (height : int) (p_blocked : float) =
     if p_blocked < 0. || p_blocked > 1. then failwith "p_blocked should be between 0 and 1";
     let rand = match src_rand with | None -> System.Random () | Some src -> src
-    let block _ _ = (float (rand.Next())) > p_blocked
+    let block _ _ = (float (rand.Next(100))) / 100.0 > p_blocked
     Array2D.init height width block
 
 let random_position (src_rand : System.Random Option) (width : int) (height : int) =
@@ -62,7 +62,6 @@ let random_position (src_rand : System.Random Option) (width : int) (height : in
     { x = rand.Next() % width; y = rand.Next() % height }
 
 let random_problem (src_rand : System.Random Option) (width : int) (height : int) (p_blocked : float) =
-    let rand = match src_rand with | None -> System.Random () | Some src -> src
     let board = random_board src_rand width height p_blocked
     let rec find_legal_position () =
         let position = random_position src_rand width height
