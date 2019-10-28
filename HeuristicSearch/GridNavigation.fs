@@ -159,9 +159,10 @@ let make_initial_state (problem : Problem) = {
 
 let validate_solution (problem : Problem) (solution : Solution) =
     let rec walk_solution (current_state : State) = function
-        | ([] : Solution) -> problem.finish = current_state.position
-        | hd::tl -> 
+        | ([] : Solution) -> failwith "Empty Solution is not valid"
+        | [ singleton ] -> problem.finish = singleton.position && current_state.position = singleton.position
+        | hd::next::tl -> 
             if current_state <> hd then false else
-            walk_solution (move_state current_state hd.generated_by) tl
+            walk_solution (move_state current_state next.generated_by) (next::tl)
         in
     walk_solution (make_initial_state problem) solution
