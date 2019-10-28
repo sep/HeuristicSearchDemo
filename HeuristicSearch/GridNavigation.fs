@@ -38,7 +38,7 @@ let string_of_solution (solution : Solution) =
     let rec walk accum = function
     | ([] : Solution) -> accum
     | hd :: tl -> walk (Printf.sprintf "%s\n%s" accum (string_of_state hd)) tl in
-    walk "" solution
+    walk (List.length solution |> Printf.sprintf "Solution has %i steps") solution
 
 let print_solution (solution : Solution) = string_of_solution solution |> printf "%s"
 
@@ -56,11 +56,14 @@ type CellType =
     | Free
     | Blocked
 
-let legal_position (board : Board) (position : Position) =
+let in_bounds (board : Board) (position : Position) =
     position.x >= 0 && 
     position.y >= 0 && 
     position.y < (board.GetLength 0) && 
-    position.x < (board.GetLength 1) &&
+    position.x < (board.GetLength 1)
+
+let legal_position (board : Board) (position : Position) =
+    in_bounds board position &&
     board.[position.y, position.x]
 
 let opposite_action = function
@@ -74,7 +77,7 @@ let are_opposite (act1 : Action) (act2 : Action) =
     act1 = opposite_action act2
 
 let cell_type (problem : Problem) (position : Position) =
-    if not (legal_position problem.board position) then begin
+    if not (in_bounds problem.board position) then begin
         (string_of_position position |> Printf.sprintf "Illegal position %s\n") |> failwith 
     end else
     if problem.start = position then InitialState
