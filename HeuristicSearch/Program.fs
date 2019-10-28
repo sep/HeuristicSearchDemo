@@ -88,7 +88,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                     if Map.containsKey key_val !closedlist then
                         metrics.duplicates <- metrics.duplicates + 1
                     else begin
-                        closedlist := Map.add key_val true !closedlist
+                        closedlist := Map.add key_val current_node.cost !closedlist
                         let child_tuples = node_expand current_node
                         List.iter (consider_child current_node) child_tuples
                     end
