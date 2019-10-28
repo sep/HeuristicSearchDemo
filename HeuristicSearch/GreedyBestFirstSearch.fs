@@ -68,6 +68,14 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
         match FSharpx.Collections.PriorityQueue.tryPop openlist with
         | Some (ret, openlist') -> openlist <- openlist'; Some ret
         | _ -> None
+    let consider_node key_val current_node = 
+        if closedlist.ContainsKey key_val then begin
+            metrics.duplicates <- metrics.duplicates + 1
+            if better current_node closedlist.[key_val] then begin
+                closedlist <- closedlist.Remove(key_val)
+                true
+            end else false
+        end else true
     enqueue root
     let mutable finished = false
     while not finished do
@@ -79,9 +87,8 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
                 finished <- true end else
                 begin
                     let key_val = node_key current_node
-                    if closedlist.ContainsKey key_val then
-                        metrics.duplicates <- metrics.duplicates + 1
-                    else begin
+                    let should_expand = consider_node key_val current_node
+                    if should_expand then begin
                         closedlist <- closedlist.Add(key_val, current_node)
                         let child_tuples = node_expand current_node
                         List.iter (consider_child current_node) child_tuples
