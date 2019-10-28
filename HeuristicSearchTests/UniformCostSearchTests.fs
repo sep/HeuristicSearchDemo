@@ -1,8 +1,8 @@
 module HeuristicSearchTests
 
 open NUnit.Framework
-open Microsoft.FSharp.Reflection
 module GN = GridNavigation
+module SI = SearchInterface
 module UCS = UniformCostSearch
 
 
@@ -22,8 +22,8 @@ let EndToEnd () =
     let key = GN.key problem.board
     let goal = GN.goal_test problem in
     let metrics = UCS.uniform_cost_search expand goal key root in
-    let generate_solution (node : (GN.State UCS.SearchNode) UCS.SolutionNode) = UCS.generate_solution_of_sol_node node
-    let validate_sol_node (node : (GN.State UCS.SearchNode) UCS.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
+    let generate_solution (node : (GN.State UCS.SearchNode) SI.SolutionNode) = UCS.generate_solution_of_sol_node node
+    let validate_sol_node (node : (GN.State UCS.SearchNode) SI.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
         GN.problem_to_string problem |> printf "%s\n";
         Assert.AreEqual(1, metrics.solution_nodes.Length);
         List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True

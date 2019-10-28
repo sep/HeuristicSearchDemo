@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="SearchInterface.fs" />
     <Compile Include="GridNavigation.fs" />
     <Compile Include="UniformCostSearch.fs" />
   </ItemGroup>
