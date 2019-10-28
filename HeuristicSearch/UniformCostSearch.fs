@@ -61,6 +61,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
     let node_key = wrap_state_fn key
     let node_expand = wrap_state_fn expand
     let node_goal_test = wrap_state_fn goal_test
+    // Note, this only works on unit costs domains.  Needs a priority queue to be general
     let enqueue (node : 'state SearchNode) = openlist := node :: !openlist
     let consider_child current_node (state, step_cost) = 
         let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost }
