@@ -19,29 +19,6 @@ type Position = {
     y: int
 }
 
-let string_of_position (position : Position) =
-    Printf.sprintf "(%i, %i)" position.x position.y
-
-type State = {
-    position : Position;
-    generated_by : Action;
-}
-
-let string_of_state (state : State) =
-    match state.generated_by with
-    | Noop -> Printf.sprintf "Start in %s" (string_of_position state.position)
-    | action -> Printf.sprintf "%s by way of %s" (string_of_position state.position) (string_of_action action)
-
-type Solution = State list
-
-let string_of_solution (solution : Solution) =
-    let rec walk accum = function
-    | ([] : Solution) -> accum
-    | hd :: tl -> walk (Printf.sprintf "%s\n%s" accum (string_of_state hd)) tl in
-    walk (List.length solution |> Printf.sprintf "Solution has %i steps") solution
-
-let print_solution (solution : Solution) = string_of_solution solution |> printf "%s"
-
 type Board = bool [,]
 
 type Problem = {
@@ -55,6 +32,30 @@ type CellType =
     | GoalState
     | Free
     | Blocked
+
+type State = {
+    position : Position;
+    generated_by : Action;
+}
+
+type Solution = State list
+
+let string_of_position (position : Position) =
+    Printf.sprintf "(%i, %i)" position.x position.y
+
+
+let string_of_state (state : State) =
+    match state.generated_by with
+    | Noop -> Printf.sprintf "Start in %s" (string_of_position state.position)
+    | action -> Printf.sprintf "%s by way of %s" (string_of_position state.position) (string_of_action action)
+
+let string_of_solution (solution : Solution) =
+    let rec walk accum = function
+    | ([] : Solution) -> accum
+    | hd :: tl -> walk (Printf.sprintf "%s\n%s" accum (string_of_state hd)) tl in
+    walk (List.length solution |> Printf.sprintf "Solution has %i steps") solution
+
+let print_solution (solution : Solution) = string_of_solution solution |> printf "%s"
 
 let in_bounds (board : Board) (position : Position) =
     position.x >= 0 && 
