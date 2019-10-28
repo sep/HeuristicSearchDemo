@@ -14,11 +14,23 @@ type 'a SearchMetrics = {
     mutable solution_nodes : 'a SolutionNode list
 }
 
-type 'a SearchNode = {
-    parent : 'a SearchNode Option
-    state : 'a
-    cost : float
-}
+[<CustomEquality; CustomComparison>]
+type SearchNode<'T when 'T: equality> = 
+    {
+        parent : SearchNode<'T> Option
+        state : 'T
+        cost : float
+    }
+    override x.Equals(yobj) =
+        match yobj with
+        | :? SearchNode<'T> as y -> x.state = y.state
+        | _ -> false
+    interface System.IComparable with
+        member x.CompareTo yobj =
+            match yobj with
+            | :? SearchNode<'T> as y -> compare x.cost y.cost
+            | _ -> invalidArg "yobj" "Cannot compare values of different types"
+        
 
 let better node1 node2 =
     node1.cost < node2.cost
