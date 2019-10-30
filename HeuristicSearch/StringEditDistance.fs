@@ -326,3 +326,13 @@ let validate_solution (problem : Problem) (solution : Solution) =
         if current_state <> hd then false else
         walk_solution (apply_nondestructive current_state next.generated_by) (next::tl) in
     walk_solution (initial_state problem) solution
+
+let character_delta (problem : Problem) (state : State) =
+    let char_count = function
+    | Null -> 0
+    | _ -> 1
+    let problem_count = Array.fold (fun accum el -> accum + char_count el) 0 problem.finish
+    let state_count = Array.fold (fun accum el -> accum + char_count el) 0 state.state
+    let delta = problem_count - state_count
+    if delta < 0 then float delta * ADD_COST
+    else float delta * DEL_COST
