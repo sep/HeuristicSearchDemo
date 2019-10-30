@@ -11,7 +11,7 @@ let Setup () =
     ()
 
 [<Test>]
-let EndToEnd () =
+let EndToEnd_GridNavigation () =
     let (board : GN.Board) = Array2D.create 3 3 true
     board.[1,1] <- false
     let (start : GN.Position) = { x = 0; y = 0 }
