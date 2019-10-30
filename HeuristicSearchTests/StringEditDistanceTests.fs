@@ -170,5 +170,22 @@ let expand_does_allows_shift_after_noop () =
         state.generated_by = SED.ShiftLeft || state.generated_by = SED.ShiftRight) successors
     Assert.IsTrue(shift_exists)
 
-//[<Test>]
-//let should_expand_state ()
+[<Test>]
+let expands_contain_reasonable_elements () =
+    let base_ar = SED.element_array_of_string "_A_"
+    let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
+    let successors = SED.expand state
+    let expected_length = 165
+    let has_remove ((el : SED.State), _) = match el.generated_by with SED.Remove _ -> true | _ -> false
+    let has_add ((el : SED.State), _) = match el.generated_by with SED.Add _ -> true | _ -> false
+    let has_replace ((el : SED.State), _) = match el.generated_by with SED.Replace _ -> true | _ -> false
+    let has_shiftleft ((el : SED.State), _) = match el.generated_by with SED.ShiftLeft -> true | _ -> false
+    let has_shiftright ((el : SED.State), _) = match el.generated_by with SED.ShiftRight -> true | _ -> false
+    let has_noop ((el : SED.State), _) = match el.generated_by with SED.Noop -> true | _ -> false
+    List.exists has_remove successors |> Assert.True
+    List.exists has_add successors |> Assert.True
+    List.exists has_replace successors |> Assert.True
+    List.exists has_shiftleft successors |> Assert.True
+    List.exists has_shiftright successors |> Assert.True
+    List.exists has_noop successors |> Assert.False
+    Assert.AreEqual(expected_length, successors.Length)
