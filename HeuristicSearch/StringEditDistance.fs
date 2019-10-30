@@ -288,9 +288,7 @@ let apply_nondestructive (state : State) (action : Action) =
 let expand (state : State) = 
     let possible_indices = [0..state.state.Length - 1]
     let possible_characters = 
-        [Whitespace;A;B;C;D;E;F;G;H;I;J;K;L;M;N;O;P;Q;R;S;T;U;V;W;X;Y;Z]
-
-    // System.ArgumentException : The lists had different lengths. list1 is 26 elements shorter than list2 (Parameter 'list1')
+        [ Whitespace; A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P; Q; R; S; T; U; V; W; X; Y; Z ]
     let possible_updates = 
         List.fold (fun accum index -> 
             List.fold (fun accum2 character -> { index = index; character = character } :: accum2) accum possible_characters) [] possible_indices
