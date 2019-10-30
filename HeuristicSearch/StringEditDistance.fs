@@ -52,7 +52,7 @@ type State = {
     generated_by : Action
 }
 
-type Instance = {
+type Problem = {
     start: Element array
     finish: Element array
 }
@@ -67,7 +67,7 @@ let SHIFT_COST = 0.
 let pad_elements (ar : Element array) desired_length =
     Array.init desired_length (fun i -> if i < desired_length then ar.[i] else Null)
 
-let normalize_instance (raw_instance : Instance) =
+let normalize_instance (raw_instance : Problem) =
     let len_start = raw_instance.start.Length
     let len_finish = raw_instance.finish.Length
     if len_start > len_finish then
@@ -306,13 +306,13 @@ let expand (state : State) =
     let possible_actions = possible_shifts @ possible_removes @ possible_adds @ possible_replaces
     List.fold generate_successor [] possible_actions
 
-let goal_test (instance : Instance) (state : State) = 
+let goal_test (instance : Problem) (state : State) = 
     state.state = instance.finish
 
 let key (state : State) = 
     string_of_element_array state.state
 
-let initial_state (problem : Instance) = 
+let initial_state (problem : Problem) = 
     {
         state = problem.start
         generated_by = Noop
