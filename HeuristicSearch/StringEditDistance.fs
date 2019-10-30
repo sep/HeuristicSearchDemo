@@ -317,3 +317,12 @@ let initial_state (problem : Problem) =
         state = problem.start
         generated_by = Noop
     }
+
+let validate_solution (problem : Problem) (solution : Solution) =
+    let rec walk_solution (current_state : State )= function
+    | [] -> failwith "Empty Solution is not valid"
+    | [ singleton ] -> problem.finish = singleton.state && current_state.state = singleton.state
+    |  hd::next::tl ->
+        if current_state <> hd then false else
+        walk_solution (apply_nondestructive current_state next.generated_by) (next::tl) in
+    walk_solution (initial_state problem) solution
