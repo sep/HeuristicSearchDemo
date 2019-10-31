@@ -327,6 +327,13 @@ let validate_solution (problem : Problem) (solution : Solution) =
         walk_solution (apply_nondestructive current_state next.generated_by) (next::tl) in
     walk_solution (initial_state problem) solution
 
+let print_solution (solution : Solution) =
+    let rec walk_solution = function
+    | [] -> ()
+    | hd::tl -> string_of_state hd |> printfn "%s"; walk_solution tl in
+    walk_solution (List.rev solution)
+
+
 let character_delta (problem : Problem) (state : State) =
     let char_count = function
     | Null -> 0
