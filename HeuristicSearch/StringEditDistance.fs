@@ -343,3 +343,8 @@ let character_delta (problem : Problem) (state : State) =
     let delta = problem_count - state_count
     if delta < 0 then float delta * ADD_COST
     else float delta * DEL_COST
+
+let instance_of_strings (start : string) (finish :string) : Problem = { 
+        start = element_array_of_string start;
+        finish = element_array_of_string finish
+    }
