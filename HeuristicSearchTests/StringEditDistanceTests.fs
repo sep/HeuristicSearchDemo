@@ -156,7 +156,8 @@ let replace_succeeds () =
 let expand_does_not_allow_shift_after_non_shift () =
     let base_ar = SED.element_array_of_string "_"
     let state = { SED.state = base_ar; SED.generated_by = SED.Remove 0 }
-    let successors = SED.expand state
+    let problem = { SED.start = base_ar; SED.finish = base_ar }
+    let successors = SED.expand problem state
     let shift_exists = List.exists (fun (state : SED.State, _) -> 
         state.generated_by = SED.ShiftLeft || state.generated_by = SED.ShiftRight) successors
     Assert.IsFalse(shift_exists)
@@ -165,7 +166,8 @@ let expand_does_not_allow_shift_after_non_shift () =
 let expand_does_allows_shift_after_noop () =
     let base_ar = SED.element_array_of_string "A_"
     let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
-    let successors = SED.expand state
+    let problem = { SED.start = base_ar; SED.finish = base_ar }
+    let successors = SED.expand problem state
     let shift_exists = List.exists (fun (state : SED.State, _) -> 
         state.generated_by = SED.ShiftLeft || state.generated_by = SED.ShiftRight) successors
     Assert.IsTrue(shift_exists)
@@ -174,8 +176,9 @@ let expand_does_allows_shift_after_noop () =
 let expands_contain_reasonable_elements () =
     let base_ar = SED.element_array_of_string "_A_"
     let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
-    let successors = SED.expand state
-    let expected_length = 165
+    let problem = { SED.start = base_ar; SED.finish = base_ar }
+    let successors = SED.expand problem state
+    let expected_length = 9
     let has_remove ((el : SED.State), _) = match el.generated_by with SED.Remove _ -> true | _ -> false
     let has_add ((el : SED.State), _) = match el.generated_by with SED.Add _ -> true | _ -> false
     let has_replace ((el : SED.State), _) = match el.generated_by with SED.Replace _ -> true | _ -> false

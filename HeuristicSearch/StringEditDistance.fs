@@ -63,6 +63,7 @@ let ADD_COST = 1.5
 let DEL_COST = 1.0
 let NO_COST = 0.
 let SHIFT_COST = 0.
+let ALL_CHARS = [ Whitespace; A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P; Q; R; S; T; U; V; W; X; Y; Z ]
 
 let pad_elements (ar : Element array) desired_length =
     Array.init desired_length (fun i -> if i < desired_length then ar.[i] else Null)
@@ -285,10 +286,15 @@ let apply_nondestructive (state : State) (action : Action) =
     end
     { state = next_array; generated_by = action }
 
-let expand (state : State) = 
+let appearing_in (target_string : Element array) =
+    let map_element map = function
+    | Alphabetical c -> Map.add c true map
+    | Null -> map
+    Array.fold map_element Map.empty target_string |> Map.fold (fun accum key _ -> key :: accum) []
+
+let expand (problem : Problem) (state : State) = 
     let possible_indices = [0..state.state.Length - 1]
-    let possible_characters = 
-        [ Whitespace; A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P; Q; R; S; T; U; V; W; X; Y; Z ]
+    let possible_characters = appearing_in problem.finish
     let possible_updates = 
         List.fold (fun accum index -> 
             List.fold (fun accum2 character -> { index = index; character = character } :: accum2) accum possible_characters) [] possible_indices
@@ -325,7 +331,7 @@ let validate_solution (problem : Problem) (solution : Solution) =
     |  hd::next::tl ->
         if current_state <> hd then false else
         walk_solution (apply_nondestructive current_state next.generated_by) (next::tl) in
-    walk_solution (initial_state problem) solution
+    walk_solution (make_initial_state problem) solution
 
 let print_solution (solution : Solution) =
     let rec walk_solution = function
