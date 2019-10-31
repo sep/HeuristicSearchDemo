@@ -312,7 +312,7 @@ let goal_test (instance : Problem) (state : State) =
 let key (state : State) = 
     string_of_element_array state.state
 
-let initial_state (problem : Problem) = 
+let make_initial_state (problem : Problem) = 
     {
         state = problem.start
         generated_by = Noop
