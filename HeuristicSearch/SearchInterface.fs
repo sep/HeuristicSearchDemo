@@ -24,3 +24,17 @@ let initial_metrics () = {
     solution_nodes = []
     stop_time = None
 }
+
+let common_display metrics = 
+    let total_seconds = match metrics.stop_time with
+    | None -> (DateTime.Now - metrics.start_time).TotalSeconds
+    | Some end_time -> (end_time - metrics.start_time).TotalSeconds in
+    printfn "{"
+    printfn "\"total time\" : %f ," total_seconds;
+    printfn "\"total nodes generated\" : %i ," metrics.nodes_generated;
+    printfn "\"total nodes expanded\" : %i ," metrics.nodes_expanded;
+    printfn "\"duplicates detected\" : %i ," metrics.duplicates
+    printfn "\"solutions found\" : %i ," metrics.solution_nodes.Length;
+    printfn "\"nodes generated per second\" : %f ," ((float (metrics.nodes_generated)) / total_seconds)
+    printfn "\"nodes expanded per second\" : %f ," ((float (metrics.nodes_expanded)) / total_seconds)
+    printfn "}"
