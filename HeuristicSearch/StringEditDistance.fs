@@ -65,8 +65,6 @@ let NO_COST = 0.
 let SHIFT_COST = 0.
 let ALL_CHARS = [ Whitespace; A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P; Q; R; S; T; U; V; W; X; Y; Z ]
 
-let pad_elements (ar : Element array) desired_length =
-    Array.init desired_length (fun i -> if i < desired_length then ar.[i] else Null)
 let pad_elements (ar : Element array) original_length desired_length =
     Array.init desired_length (fun i -> if i < original_length then ar.[i] else Null)
 
@@ -74,10 +72,8 @@ let normalize_instance (raw_instance : Problem) =
     let len_start = raw_instance.start.Length
     let len_finish = raw_instance.finish.Length
     if len_start > len_finish then
-        { raw_instance with finish = pad_elements raw_instance.finish len_start }
         { raw_instance with finish = pad_elements raw_instance.finish len_finish len_start }
     else if len_finish > len_start then
-        { raw_instance with start = pad_elements raw_instance.finish len_finish }
         { raw_instance with start = pad_elements raw_instance.start len_start len_finish }
     else raw_instance
 
@@ -273,7 +269,10 @@ let valid_move (state : State) (planned_action : Action) =
                         | Remove _
                         | Add _
                         | Replace _ -> false
-        | Replace _ -> true
+        | Replace update -> 
+            match state.state.[update.index] with 
+            | Null -> false
+            | Alphabetical character -> character <> update.character
 
 let apply_nondestructive (state : State) (action : Action) =
     if not (valid_move state action) then failwith (sprintf "Invalid action %s" (string_of_action action))
@@ -354,9 +353,6 @@ let character_delta (problem : Problem) (state : State) =
     if delta < 0 then float delta * ADD_COST
     else float delta * DEL_COST
 
-let instance_of_strings (start : string) (finish :string) : Problem = { 
-        start = element_array_of_string start;
-        finish = element_array_of_string finish
 let instance_of_strings (start : string) (finish : string) : Problem = 
     normalize_instance { 
         start = element_array_of_string start; 
