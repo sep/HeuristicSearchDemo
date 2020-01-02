@@ -67,14 +67,18 @@ let ALL_CHARS = [ Whitespace; A; B; C; D; E; F; G; H; I; J; K; L; M; N; O; P; Q;
 
 let pad_elements (ar : Element array) desired_length =
     Array.init desired_length (fun i -> if i < desired_length then ar.[i] else Null)
+let pad_elements (ar : Element array) original_length desired_length =
+    Array.init desired_length (fun i -> if i < original_length then ar.[i] else Null)
 
 let normalize_instance (raw_instance : Problem) =
     let len_start = raw_instance.start.Length
     let len_finish = raw_instance.finish.Length
     if len_start > len_finish then
         { raw_instance with finish = pad_elements raw_instance.finish len_start }
+        { raw_instance with finish = pad_elements raw_instance.finish len_finish len_start }
     else if len_finish > len_start then
         { raw_instance with start = pad_elements raw_instance.finish len_finish }
+        { raw_instance with start = pad_elements raw_instance.start len_start len_finish }
     else raw_instance
 
 let alphabetical_number = function
