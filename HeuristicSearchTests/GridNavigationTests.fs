@@ -1,4 +1,4 @@
-module DomainTests
+module GridNavigationTests
 
 open NUnit.Framework
 open Microsoft.FSharp.Reflection

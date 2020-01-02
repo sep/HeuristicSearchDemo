@@ -1,4 +1,4 @@
-module HeuristicSearchTests
+module UniformCostSearchTests
 
 open NUnit.Framework
 module GN = GridNavigation
@@ -54,4 +54,5 @@ let EndToEnd_StringEditing () =
     let validate_sol_node (node : (SED.State UCS.SearchNode) SI.SolutionNode) = generate_solution node |> (SED.validate_solution problem) in
         Assert.AreEqual(1, metrics.solution_nodes.Length);
         List.iter SED.print_solution (List.map generate_solution metrics.solution_nodes);
-        List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True
+        List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True;
+        SearchInterface.common_display metrics
