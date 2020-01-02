@@ -56,6 +56,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
     let node_goal_test = wrap_state_fn goal_test
     let enqueue (node : 'state SearchNode) = openlist <- FSharpx.Collections.PriorityQueue.insert node openlist
     let consider_child current_node (state, step_cost) = 
+        metrics.nodes_generated <- metrics.nodes_generated + 1
         let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost }
         match metrics.solution_nodes with
             | [] -> enqueue child_node
@@ -80,6 +81,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                     else begin
                         closedlist <- closedlist.Add(key_val, current_node)
                         let child_tuples = node_expand current_node
+                        metrics.nodes_expanded <- metrics.nodes_expanded + 1
                         List.iter (consider_child current_node) child_tuples
                     end
                 end
