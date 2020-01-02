@@ -4,7 +4,7 @@ open SearchInterface
 open System
 
 [<CustomEquality; CustomComparison>]
-type SearchNode<'T when 'T: equality> = 
+type SearchNode<'T when 'T: equality> =
     {
         parent : SearchNode<'T> Option
         state : 'T
@@ -18,7 +18,7 @@ type SearchNode<'T when 'T: equality> =
     interface System.IComparable with
         member x.CompareTo yobj =
             match yobj with
-            | :? SearchNode<'T> as y -> 
+            | :? SearchNode<'T> as y ->
                 let heuristic_compare = compare x.heuristic_value y.heuristic_value
                 if heuristic_compare = 0 then compare x.cost y.cost else heuristic_compare
             | _ -> invalidArg "yobj" "Cannot compare values of different types"
@@ -28,7 +28,7 @@ let better node1 node2 =
 
 let wrap_state_fn fn node =
     fn node.state
-    
+
 let make_root heuristic initial_state =
     let root = {
         parent = None
@@ -37,7 +37,7 @@ let make_root heuristic initial_state =
         heuristic_value = heuristic initial_state
     }
     root
-    
+
 let generate_solution (goal_node : 'a SearchNode) =
     let rec walk node =
         node.state :: begin
@@ -46,7 +46,7 @@ let generate_solution (goal_node : 'a SearchNode) =
             | Some parent -> walk parent
             end in
         walk goal_node |> List.rev
-        
+
 let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
     generate_solution sol_node.solution
 
@@ -59,7 +59,7 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
     let node_expand = wrap_state_fn expand
     let node_goal_test = wrap_state_fn goal_test
     let enqueue (node : 'state SearchNode) = openlist <- FSharpx.Collections.PriorityQueue.insert node openlist
-    let consider_child current_node (state, step_cost) = 
+    let consider_child current_node (state, step_cost) =
         let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost; heuristic_value = heuristic state }
         match metrics.solution_nodes with
             | [] -> enqueue child_node
@@ -68,7 +68,7 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
         match FSharpx.Collections.PriorityQueue.tryPop openlist with
         | Some (ret, openlist') -> openlist <- openlist'; Some ret
         | _ -> None
-    let consider_node key_val current_node = 
+    let consider_node key_val current_node =
         if closedlist.ContainsKey key_val then begin
             metrics.duplicates <- metrics.duplicates + 1
             if better current_node closedlist.[key_val] then begin
@@ -81,7 +81,7 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
     while not finished do
         match pop() with
         | None -> finished <- true
-        | Some current_node -> 
+        | Some current_node ->
             if node_goal_test current_node then begin
                 metrics.solution_nodes <- { solution = current_node; found_at_time = DateTime.Now } :: metrics.solution_nodes;
                 finished <- true end else
@@ -95,4 +95,3 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
                     end
                 end
     metrics
-    

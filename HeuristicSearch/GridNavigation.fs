@@ -1,5 +1,4 @@
-﻿
-module GridNavigation
+﻿module GridNavigation
 
 type Action =
 | North
@@ -28,7 +27,7 @@ type Problem = {
     board : Board
 }
 
-type CellType = 
+type CellType =
     | InitialState
     | GoalState
     | Free
@@ -42,9 +41,9 @@ type State = {
 type Solution = State list
 
 let in_bounds (board : Board) (position : Position) =
-    position.x >= 0 && 
-    position.y >= 0 && 
-    position.y < (board.GetLength 0) && 
+    position.x >= 0 &&
+    position.y >= 0 &&
+    position.y < (board.GetLength 0) &&
     position.x < (board.GetLength 1)
 
 let legal_position (board : Board) (position : Position) =
@@ -71,7 +70,6 @@ let random_problem (src_rand : System.Random Option) (width : int) (height : int
 let string_of_position (position : Position) =
     Printf.sprintf "(%i, %i)" position.x position.y
 
-
 let string_of_state (state : State) =
     match state.generated_by with
     | Noop -> Printf.sprintf "Start in %s" (string_of_position state.position)
@@ -97,7 +95,7 @@ let are_opposite (act1 : Action) (act2 : Action) =
 
 let cell_type (problem : Problem) (position : Position) =
     if not (in_bounds problem.board position) then begin
-        (string_of_position position |> Printf.sprintf "Illegal position %s\n") |> failwith 
+        (string_of_position position |> Printf.sprintf "Illegal position %s\n") |> failwith
     end else
     if problem.start = position then InitialState
     else if problem.finish = position then GoalState
@@ -131,7 +129,7 @@ let problem_to_string (problem : Problem) =
                     let cell_char = cell_type problem { x = x; y = y } |> char_of_cell in
                         row_string := spf "%s%c" !row_string cell_char
                 done;
-                board_string := spf "%s\n%s" !board_string !row_string 
+                board_string := spf "%s\n%s" !board_string !row_string
         done;
         !board_string
 
@@ -149,16 +147,16 @@ let move_state (state : State) action =
     { position = move state.position action; generated_by = action }
 
 let make_problem (board : Board) (initial : Position) (goal : Position) =
-    if legal_position board initial |> not then 
+    if legal_position board initial |> not then
         failwith "Starting state not a legal board position"
     if legal_position board goal |> not then
         failwith "Goal state not a legal board position"
     { start = initial; finish = goal; board = board }
-  
-let expand (board : Board) (state : State) = 
+
+let expand (board : Board) (state : State) =
     let possible_actions = [North; South; East; West]
     let validate_position = legal_position board
-    let consider_action (accum : (State * float) list) (action : Action) = 
+    let consider_action (accum : (State * float) list) (action : Action) =
         if are_opposite action state.generated_by then accum else
         let state' = move_state state action
         if validate_position state'.position then
@@ -169,18 +167,18 @@ let expand (board : Board) (state : State) =
 
 let key (board : Board) (state : State) =
     let width = board.GetLength 1
-    state.position.x + state.position.y * width 
+    state.position.x + state.position.y * width
 
-let make_initial_state (problem : Problem) = { 
-    position = problem.start; 
-    generated_by = Noop 
+let make_initial_state (problem : Problem) = {
+    position = problem.start;
+    generated_by = Noop
 }
 
 let validate_solution (problem : Problem) (solution : Solution) =
     let rec walk_solution (current_state : State) = function
         | ([] : Solution) -> failwith "Empty Solution is not valid"
         | [ singleton ] -> problem.finish = singleton.position && current_state.position = singleton.position
-        | hd::next::tl -> 
+        | hd::next::tl ->
             if current_state <> hd then false else
             walk_solution (move_state current_state next.generated_by) (next::tl)
         in

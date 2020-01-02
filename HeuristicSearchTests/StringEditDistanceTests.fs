@@ -11,10 +11,10 @@ let Setup () =
 
 [<Test>]
 let alphabetic_indexing () =
-    let characters = [ SED.A; SED.B; SED.C; SED.D; SED.E; SED.F; SED.G; SED.H; SED.I; SED.J; SED.K; SED.L; 
+    let characters = [ SED.A; SED.B; SED.C; SED.D; SED.E; SED.F; SED.G; SED.H; SED.I; SED.J; SED.K; SED.L;
                        SED.M; SED.N; SED.O; SED.P; SED.Q; SED.R; SED.S; SED.T; SED.U; SED.V; SED.W; SED.X;
                        SED.Y; SED.Z ]
-    List.iteri (fun index element -> 
+    List.iteri (fun index element ->
         let me = List.item index characters
         let expected = index + 1
         let experienced = SED.alphabetical_number me
@@ -22,7 +22,7 @@ let alphabetic_indexing () =
 
 [<Test>]
 let alphabetic_distances () =
-    let characters = [ SED.A; SED.B; SED.C; SED.D; SED.E; SED.F; SED.G; SED.H; SED.I; SED.J; SED.K; SED.L; 
+    let characters = [ SED.A; SED.B; SED.C; SED.D; SED.E; SED.F; SED.G; SED.H; SED.I; SED.J; SED.K; SED.L;
                        SED.M; SED.N; SED.O; SED.P; SED.Q; SED.R; SED.S; SED.T; SED.U; SED.V; SED.W; SED.X;
                        SED.Y; SED.Z ]
     let expected_maximums = List.map float [ 13..25 ]
@@ -40,7 +40,7 @@ let string_conversion () =
     let expected_output = "__HELLO WORLD__"
     let element_ar = [| SED.Null; SED.Null; SED.Alphabetical SED.H; SED.Alphabetical SED.E;
                         SED.Alphabetical SED.L; SED.Alphabetical SED.L;
-                        SED.Alphabetical SED.O; SED.Alphabetical SED.Whitespace; SED.Alphabetical SED.W; 
+                        SED.Alphabetical SED.O; SED.Alphabetical SED.Whitespace; SED.Alphabetical SED.W;
                         SED.Alphabetical SED.O; SED.Alphabetical SED.R; SED.Alphabetical SED.L;
                         SED.Alphabetical SED.D; SED.Null; SED.Null |]
     let as_string = SED.string_of_element_array element_ar
@@ -50,7 +50,7 @@ let string_conversion () =
 let ingestion () =
     let expected_output = [| SED.Null; SED.Null; SED.Alphabetical SED.H; SED.Alphabetical SED.E;
     SED.Alphabetical SED.L; SED.Alphabetical SED.L;
-    SED.Alphabetical SED.O; SED.Alphabetical SED.Whitespace; SED.Alphabetical SED.W; 
+    SED.Alphabetical SED.O; SED.Alphabetical SED.Whitespace; SED.Alphabetical SED.W;
     SED.Alphabetical SED.O; SED.Alphabetical SED.R; SED.Alphabetical SED.L;
     SED.Alphabetical SED.D; SED.Null; SED.Null |]
     let input = "__HELLO WORLD__"
@@ -76,12 +76,12 @@ let test_shift_right() =
     let state'' = SED.apply_nondestructive state' SED.ShiftRight
     let as_string = SED.string_of_element_array state''.state
     Assert.AreEqual(expected_output, as_string)
-    
+
 [<Test>]
 let test_invalid_shift_right() =
     let base_ar = SED.element_array_of_string "__HELLO WORLD"
     let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
-    
+
     try
         ignore (SED.apply_nondestructive state SED.ShiftRight)
         Assert.Fail "Should have failed on shift right"
@@ -93,7 +93,7 @@ let test_invalid_shift_right() =
 let test_invalid_shift_left() =
     let base_ar = SED.element_array_of_string "HELLO WORLD__"
     let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
-    
+
     try
         ignore (SED.apply_nondestructive state SED.ShiftLeft)
         Assert.Fail "Should have failed on shift left"
@@ -158,7 +158,7 @@ let expand_does_not_allow_shift_after_non_shift () =
     let state = { SED.state = base_ar; SED.generated_by = SED.Remove 0 }
     let problem = { SED.start = base_ar; SED.finish = base_ar }
     let successors = SED.expand problem state
-    let shift_exists = List.exists (fun (state : SED.State, _) -> 
+    let shift_exists = List.exists (fun (state : SED.State, _) ->
         state.generated_by = SED.ShiftLeft || state.generated_by = SED.ShiftRight) successors
     Assert.IsFalse(shift_exists)
 
@@ -168,14 +168,14 @@ let expand_does_allows_shift_after_noop () =
     let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
     let problem = { SED.start = base_ar; SED.finish = base_ar }
     let successors = SED.expand problem state
-    let shift_exists = List.exists (fun (state : SED.State, _) -> 
+    let shift_exists = List.exists (fun (state : SED.State, _) ->
         state.generated_by = SED.ShiftLeft || state.generated_by = SED.ShiftRight) successors
     Assert.IsTrue(shift_exists)
 
 [<Test>]
 let expands_contain_reasonable_elements () =
     let problem = SED.instance_of_strings "HERE" "THERE"
-    let state = SED.make_initial_state problem 
+    let state = SED.make_initial_state problem
     let successors = SED.expand problem state
     let expected_length = 37
     let has_remove ((el : SED.State), _) = match el.generated_by with SED.Remove _ -> true | _ -> false

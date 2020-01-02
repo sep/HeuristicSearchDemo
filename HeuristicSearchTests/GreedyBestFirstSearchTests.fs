@@ -6,7 +6,6 @@ module SED = StringEditDistance
 module SI = SearchInterface
 module GBFS = GreedyBestFirstSearch
 
-
 [<SetUp>]
 let Setup () =
     ()

@@ -66,7 +66,7 @@ let ValidSolutionIsValid () =
     let (start : GN.Position) = { x = 0; y = 0 }
     let (finish : GN.Position) = { x = 2; y = 0 }
     let (problem : GN.Problem) = { start = start; finish = finish; board = board }
-    let solution = [ 
+    let solution = [
         { GN.position = start; GN.generated_by = GN.Noop };
         { GN.position = { x = 1; y = 0 }; GN.generated_by = GN.East };
         { GN.position = { x = 2; y = 0 }; GN.generated_by = GN.East };
@@ -91,7 +91,7 @@ let PartialSolutionFalse () =
     let (start : GN.Position) = { x = 0; y = 0 }
     let (finish : GN.Position) = { x = 2; y = 0 }
     let (problem : GN.Problem) = { start = start; finish = finish; board = board }
-    let solution = [ 
+    let solution = [
         { GN.position = start; GN.generated_by = GN.Noop };
         { GN.position = { x = 1; y = 0 }; GN.generated_by = GN.East };
     ]
@@ -103,12 +103,11 @@ let InvalidSolutionFalse () =
     let (start : GN.Position) = { x = 0; y = 0 }
     let (finish : GN.Position) = { x = 2; y = 0 }
     let (problem : GN.Problem) = { start = start; finish = finish; board = board }
-    let solution = [ 
+    let solution = [
         { GN.position = start; GN.generated_by = GN.Noop };
         { GN.position = { x = 2; y = 0 }; GN.generated_by = GN.West };
     ]
     Assert.False (GN.validate_solution problem solution)
-
 
 [<Test>]
 let RandomProblemsAreValid() =
