@@ -12,6 +12,7 @@
     <Compile Include="GridNavigation.fs" />
     <Compile Include="UniformCostSearch.fs" />
     <Compile Include="AstarSearch.fs" />
+    <Compile Include="WeightedAstarSearch.fs" />
   </ItemGroup>
 
   <ItemGroup>
