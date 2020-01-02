@@ -29,20 +29,26 @@ type Problem = {
 }
 
 type CellType =
-    | InitialState
-    | GoalState
-    | Free
-    | Blocked
-
-type State = {
 | InitialState
 | GoalState
 | Free
 | Blocked
 
+[<CustomEqualityAttribute; CustomComparison>]
+type State = 
+    {
     position : Position;
     generated_by : Action;
-}
+    }
+    override x.Equals(yobj) =
+       match yobj with
+       | :? State as y -> x.position = y.position
+       | _ -> false
+    interface System.IComparable with
+        member x.CompareTo yobj =
+            match yobj with
+            | :? State as y -> compare x.position y.position
+            | _ -> invalidArg "yobj" "Cannot compare values of different types"
 
 type Solution = State list
 
