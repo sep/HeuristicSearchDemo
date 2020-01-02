@@ -94,4 +94,4 @@ let greedy_best_first_search (expand : 'state -> ('state * float) list) (goal_te
                         List.iter (consider_child current_node) child_tuples
                     end
                 end
-    metrics
+    { metrics with stop_time = Some DateTime.Now }
