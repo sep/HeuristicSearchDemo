@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AstarSearchTests.fs" />
     <Compile Include="StringEditDistanceTests.fs" />
     <Compile Include="GreedyBestFirstSearchTests.fs" />
     <Compile Include="GridNavigationTests.fs" />

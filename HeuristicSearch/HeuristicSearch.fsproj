@@ -11,6 +11,7 @@
     <Compile Include="GreedyBestFirstSearch.fs" />
     <Compile Include="GridNavigation.fs" />
     <Compile Include="UniformCostSearch.fs" />
+    <Compile Include="AstarSearch.fs" />
   </ItemGroup>
 
   <ItemGroup>
