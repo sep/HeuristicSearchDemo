@@ -14,6 +14,7 @@ let string_of_action = function
 | West -> "West"
 | Noop -> ""
 
+[<Struct>]
 type Position = {
     x : int
     y: int
