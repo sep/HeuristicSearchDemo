@@ -174,11 +174,10 @@ let expand_does_allows_shift_after_noop () =
 
 [<Test>]
 let expands_contain_reasonable_elements () =
-    let base_ar = SED.element_array_of_string "_A_"
-    let state = { SED.state = base_ar; SED.generated_by = SED.Noop }
-    let problem = { SED.start = base_ar; SED.finish = base_ar }
+    let problem = SED.instance_of_strings "HERE" "THERE"
+    let state = SED.make_initial_state problem 
     let successors = SED.expand problem state
-    let expected_length = 9
+    let expected_length = 37
     let has_remove ((el : SED.State), _) = match el.generated_by with SED.Remove _ -> true | _ -> false
     let has_add ((el : SED.State), _) = match el.generated_by with SED.Add _ -> true | _ -> false
     let has_replace ((el : SED.State), _) = match el.generated_by with SED.Replace _ -> true | _ -> false
@@ -188,7 +187,7 @@ let expands_contain_reasonable_elements () =
     List.exists has_remove successors |> Assert.True
     List.exists has_add successors |> Assert.True
     List.exists has_replace successors |> Assert.True
-    List.exists has_shiftleft successors |> Assert.True
+    List.exists has_shiftleft successors |> Assert.False
     List.exists has_shiftright successors |> Assert.True
     List.exists has_noop successors |> Assert.False
     Assert.AreEqual(expected_length, successors.Length)
