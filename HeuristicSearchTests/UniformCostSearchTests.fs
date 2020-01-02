@@ -30,7 +30,7 @@ let EndToEnd_GridNavigation () =
 
 [<Test>]
 let Benchmark_GridNavigation () =
-    let problem = GN.random_problem None 5000 5000 0.25 in
+    let problem = GN.random_problem None 2000 2000 0.25 in
     let (root : GN.State) = GN.make_initial_state problem
     let expand = GN.expand problem.board
     let key = GN.key problem.board
