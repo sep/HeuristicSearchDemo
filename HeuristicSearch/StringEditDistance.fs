@@ -357,4 +357,8 @@ let character_delta (problem : Problem) (state : State) =
 let instance_of_strings (start : string) (finish :string) : Problem = { 
         start = element_array_of_string start;
         finish = element_array_of_string finish
+let instance_of_strings (start : string) (finish : string) : Problem = 
+    normalize_instance { 
+        start = element_array_of_string start; 
+        finish = element_array_of_string finish 
     }
