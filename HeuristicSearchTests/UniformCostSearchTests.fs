@@ -29,6 +29,20 @@ let EndToEnd_GridNavigation () =
         List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True
 
 [<Test>]
+let Benchmark_GridNavigation () =
+    let problem = GN.random_problem None 5000 5000 0.25 in
+    let (root : GN.State) = GN.make_initial_state problem
+    let expand = GN.expand problem.board
+    let key = GN.key problem.board
+    let goal = GN.goal_test problem in
+    let metrics = UCS.uniform_cost_search expand goal key root in
+    let generate_solution (node : (GN.State UCS.SearchNode) SI.SolutionNode) = UCS.generate_solution_of_sol_node node
+    let validate_sol_node (node : (GN.State UCS.SearchNode) SI.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
+        Assert.AreEqual(1, metrics.solution_nodes.Length);
+        List.fold (fun accum e -> accum && validate_sol_node e) true metrics.solution_nodes |> Assert.True;
+        SearchInterface.common_display metrics
+
+[<Test>]
 let EndToEnd_StringEditing () =
     let (problem : SED.Problem) = SED.instance_of_strings "HERE" "THERE"
     let (root : SED.State) = SED.make_initial_state problem
