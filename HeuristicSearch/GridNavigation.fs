@@ -34,6 +34,11 @@ type CellType =
     | Blocked
 
 type State = {
+| InitialState
+| GoalState
+| Free
+| Blocked
+
     position : Position;
     generated_by : Action;
 }
