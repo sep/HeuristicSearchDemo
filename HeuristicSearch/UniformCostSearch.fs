@@ -86,4 +86,7 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                     end
                 end
     { metrics with stop_time = Some DateTime.Now }
-     
+
+let uniform_cost_search_class_adapter (iface : DomainInterface.DuplicateDomainInterface<float, 'state, 'key>) =
+    uniform_cost_search iface.Expand iface.GoalP iface.Key iface.InitialState
+    
