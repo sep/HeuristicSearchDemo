@@ -17,7 +17,7 @@ let EndToEnd_GridNavigation () =
     let (finish : GN.Position) = { x = 2; y = 2 }
     let (problem : GN.Problem) = { start = start; finish = finish; board = board }
     let iface = GN.GridDomainInterface(problem)
-    let metrics = WeightedAstar.astar_search iface 2.0 in
+    let metrics = WeightedAstar.wastar_search iface 2.0 in
     let generate_solution (node : (GN.State WeightedAstar.SearchNode) SI.SolutionNode) = WeightedAstar.generate_solution_of_sol_node node
     let validate_sol_node (node : (GN.State WeightedAstar.SearchNode) SI.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
         GN.problem_to_string problem |> printf "%s\n";
@@ -28,7 +28,7 @@ let EndToEnd_GridNavigation () =
 let Benchmark_GridNavigation () =
     let problem = GN.random_problem None 2000 2000 0.25 in
     let iface = GN.GridDomainInterface(problem)
-    let metrics = WeightedAstar.astar_search iface 2.0 in
+    let metrics = WeightedAstar.wastar_search iface 2.0 in
     let generate_solution (node : (GN.State WeightedAstar.SearchNode) SI.SolutionNode) = WeightedAstar.generate_solution_of_sol_node node
     let validate_sol_node (node : (GN.State WeightedAstar.SearchNode) SI.SolutionNode) = generate_solution node |> (GN.validate_solution problem) in
         Assert.AreEqual(1, metrics.solution_nodes.Length);
@@ -39,7 +39,7 @@ let Benchmark_GridNavigation () =
 let EndToEnd_StringEditing () =
     let (problem : SED.Problem) = SED.instance_of_strings "HERE" "THERE"
     let iface = SED.StringDomainInterface(problem)
-    let metrics = WeightedAstar.astar_search iface 2.0 in
+    let metrics = WeightedAstar.wastar_search iface 2.0 in
     let generate_solution (node : (SED.State WeightedAstar.SearchNode) SI.SolutionNode) = WeightedAstar.generate_solution_of_sol_node node
     let validate_sol_node (node : (SED.State WeightedAstar.SearchNode) SI.SolutionNode) = generate_solution node |> (SED.validate_solution problem) in
         Assert.AreEqual(1, metrics.solution_nodes.Length);

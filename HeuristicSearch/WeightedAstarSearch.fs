@@ -50,7 +50,7 @@ let generate_solution (goal_node : 'a SearchNode) =
 let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
     generate_solution sol_node.solution
 
-let astar_search (iface : DomainInterface.CostHeuristicDuplicateDomainInterface<float, 'state, 'hashkey>) (weight : float) =
+let wastar_search (iface : DomainInterface.CostHeuristicDuplicateDomainInterface<float, 'state, 'hashkey>) (weight : float) =
     let mutable openlist : FSharpx.Collections.IPriorityQueue<'state SearchNode> = FSharpx.Collections.PriorityQueue.empty false
     let mutable closedlist : FSharpx.Collections.PersistentHashMap<'hash_value, 'state SearchNode> = FSharpx.Collections.PersistentHashMap.empty
     let root = make_root weight iface.H  iface.InitialState
