@@ -50,17 +50,17 @@ let generate_solution (goal_node : 'a SearchNode) =
 let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
     generate_solution sol_node.solution
 
-let astar_search (expand : 'state -> ('state * float) list) (goal_test : 'state -> bool) (key : 'state -> 'hash_value) (heuristic : 'state -> float) (initial_state : 'state) (weight : float) =
+let astar_search (iface : DomainInterface.CostHeuristicDuplicateDomainInterface<float, 'state, 'hashkey>) (weight : float) =
     let mutable openlist : FSharpx.Collections.IPriorityQueue<'state SearchNode> = FSharpx.Collections.PriorityQueue.empty false
     let mutable closedlist : FSharpx.Collections.PersistentHashMap<'hash_value, 'state SearchNode> = FSharpx.Collections.PersistentHashMap.empty
-    let root = make_root weight heuristic initial_state
+    let root = make_root weight iface.H  iface.InitialState
     let metrics = initial_metrics ()
-    let node_key = wrap_state_fn key
-    let node_expand = wrap_state_fn expand
-    let node_goal_test = wrap_state_fn goal_test
+    let node_key = wrap_state_fn iface.Key
+    let node_expand = wrap_state_fn iface.Expand
+    let node_goal_test = wrap_state_fn iface.GoalP
     let enqueue (node : 'state SearchNode) = openlist <- FSharpx.Collections.PriorityQueue.insert node openlist
     let consider_child current_node (state, step_cost) =
-        let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost; fprime = current_node.cost + weight * (heuristic state) }
+        let child_node = { parent = Some current_node; state = state; cost = current_node.cost + step_cost; fprime = current_node.cost + weight * (iface.H state) }
         match metrics.solution_nodes with
             | [] -> enqueue child_node
             | hd::_ -> if better child_node hd.solution then enqueue child_node
