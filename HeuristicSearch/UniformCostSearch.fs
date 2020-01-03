@@ -46,14 +46,14 @@ let generate_solution (goal_node : 'a SearchNode) =
 let generate_solution_of_sol_node (sol_node : ('a SearchNode) SolutionNode) =
     generate_solution sol_node.solution
 
-let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 'state -> bool) (key : 'state -> 'hash_value) (initial_state : 'state) =
+let uniform_cost_search (iface : DomainInterface.DuplicateDomainInterface<float, 'state, 'key>) =
     let mutable openlist : FSharpx.Collections.IPriorityQueue<'state SearchNode> = FSharpx.Collections.PriorityQueue.empty false
     let mutable closedlist : FSharpx.Collections.PersistentHashMap<'hash_value, 'state SearchNode> = FSharpx.Collections.PersistentHashMap.empty
-    let root = make_root initial_state
+    let root = make_root iface.InitialState
     let metrics = initial_metrics ()
-    let node_key = wrap_state_fn key
-    let node_expand = wrap_state_fn expand
-    let node_goal_test = wrap_state_fn goal_test
+    let node_key = wrap_state_fn iface.Key
+    let node_expand = wrap_state_fn iface.Expand
+    let node_goal_test = wrap_state_fn iface.GoalP
     let enqueue (node : 'state SearchNode) = openlist <- FSharpx.Collections.PriorityQueue.insert node openlist
     let consider_child current_node (state, step_cost) = 
         metrics.nodes_generated <- metrics.nodes_generated + 1
@@ -86,7 +86,4 @@ let uniform_cost_search (expand : 'state -> ('state * float) list) (goal_test : 
                     end
                 end
     { metrics with stop_time = Some DateTime.Now }
-
-let uniform_cost_search_class_adapter (iface : DomainInterface.DuplicateDomainInterface<float, 'state, 'key>) =
-    uniform_cost_search iface.Expand iface.GoalP iface.Key iface.InitialState
     
