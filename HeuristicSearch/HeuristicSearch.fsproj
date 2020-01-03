@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="DomainInterface.fs" />
     <Compile Include="StringEditDistance.fs" />
     <Compile Include="SearchInterface.fs" />
     <Compile Include="GreedyBestFirstSearch.fs" />

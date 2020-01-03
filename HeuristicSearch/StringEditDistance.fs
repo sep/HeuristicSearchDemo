@@ -358,3 +358,11 @@ let instance_of_strings (start : string) (finish : string) : Problem =
         start = element_array_of_string start; 
         finish = element_array_of_string finish 
     }
+
+type StringDomainInterface(problem : Problem) = 
+    interface DomainInterface.CostHeuristicDuplicateDomainInterface<float, State, string> with
+        member this.Expand s = expand problem s
+        member this.GoalP s = goal_test problem s
+        member this.Key s = key s
+        member this.H s = character_delta problem s
+        member this.InitialState = make_initial_state problem

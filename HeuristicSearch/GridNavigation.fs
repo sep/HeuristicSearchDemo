@@ -198,3 +198,11 @@ let validate_solution (problem : Problem) (solution : Solution) =
 
 let manhattan_distance (problem : Problem) (state : State) =
     abs(problem.finish.x - state.position.x) + abs(problem.finish.y - state.position.y)
+
+type GridDomainInterface(problem : Problem) = 
+    interface DomainInterface.CostHeuristicDuplicateDomainInterface<float, State, int> with
+        member this.Expand s = expand problem.board s
+        member this.GoalP s = goal_test problem s
+        member this.Key s = key problem.board s
+        member this.H s = manhattan_distance problem s |> float
+        member this.InitialState = make_initial_state problem
